@@ -1,0 +1,791 @@
+/* Squid Game Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: white;
+    overflow-x: hidden;
+}
+
+#gameContainer {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+.screen {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.screen.active {
+    display: flex;
+}
+
+/* Welcome Screen */
+#welcomeScreen {
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="3" fill="%23ff1744" opacity="0.3"/></svg>');
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+.title h1 {
+    font-size: 4rem;
+    color: #ff1744;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+    margin-bottom: 10px;
+    letter-spacing: 5px;
+}
+
+.subtitle {
+    font-size: 1.5rem;
+    color: #ffeb3b;
+    margin-bottom: 40px;
+}
+
+.player-info {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+#playerName {
+    padding: 15px 20px;
+    font-size: 1.2rem;
+    border: 2px solid #ff1744;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    margin-bottom: 20px;
+    width: 300px;
+}
+
+#playerName::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    background: #ff1744;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background: #d50000;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255,23,68,0.4);
+}
+
+button:disabled {
+    background: #666;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.game-rules {
+    background: rgba(0,0,0,0.3);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #ff1744;
+}
+
+.game-rules h3 {
+    color: #ffeb3b;
+    margin-bottom: 15px;
+}
+
+.game-rules ul {
+    list-style: none;
+}
+
+.game-rules li {
+    margin: 10px 0;
+    padding-left: 20px;
+    position: relative;
+}
+
+.game-rules li:before {
+    content: "⚠️";
+    position: absolute;
+    left: 0;
+}
+
+/* Game Selection Screen */
+#gameSelectionScreen {
+    padding: 40px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.header h2 {
+    font-size: 2.5rem;
+    color: #ff1744;
+    margin-bottom: 20px;
+}
+
+.player-status {
+    display: flex;
+    justify-content: space-between;
+    max-width: 400px;
+    margin: 0 auto;
+    font-size: 1.2rem;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.game-card {
+    background: rgba(255,255,255,0.1);
+    border: 2px solid #333;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.game-card:hover {
+    border-color: #ff1744;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(255,23,68,0.3);
+}
+
+.game-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.game-card.completed {
+    border-color: #4caf50;
+    background: rgba(76,175,80,0.2);
+}
+
+.game-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+}
+
+.game-card h3 {
+    color: #ffeb3b;
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+}
+
+.game-card p {
+    color: #ccc;
+    margin-bottom: 15px;
+}
+
+.status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+}
+
+.status.completed {
+    background: #4caf50;
+}
+
+.status.locked {
+    background: #666;
+}
+
+/* Game Screens */
+.game-screen {
+    background: linear-gradient(135deg, #0d1421, #1a1a2e);
+}
+
+.game-header {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.5);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.game-header h2 {
+    color: #ff1744;
+    font-size: 1.8rem;
+}
+
+.timer, .progress, .lives, .strength, .health {
+    background: rgba(255,255,255,0.1);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+}
+
+.game-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 100px 20px 80px;
+}
+
+.game-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    text-align: center;
+}
+
+.game-controls p {
+    margin-bottom: 10px;
+    color: #ffeb3b;
+    font-weight: bold;
+}
+
+/* Red Light Green Light */
+#redlightGame .game-area {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(to right, #1976d2, #4caf50);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+#doll {
+    position: absolute;
+    top: 50%;
+    right: 50px;
+    font-size: 4rem;
+    transform: translateY(-50%);
+    transition: transform 0.3s;
+}
+
+#doll.turned {
+    transform: translateY(-50%) rotateY(180deg);
+}
+
+#light-status {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1.5rem;
+    transition: all 0.3s;
+}
+
+#light-status.green {
+    background: #4caf50;
+    color: white;
+}
+
+#light-status.red {
+    background: #f44336;
+    color: white;
+    animation: blink 0.5s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+#player {
+    position: absolute;
+    bottom: 50px;
+    left: 50px;
+    font-size: 2rem;
+    transition: left 0.1s;
+}
+
+.finish-line {
+    position: absolute;
+    right: 20px;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: repeating-linear-gradient(
+        0deg,
+        #ffeb3b,
+        #ffeb3b 10px,
+        #ff1744 10px,
+        #ff1744 20px
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    color: white;
+    font-weight: bold;
+    padding-left: 10px;
+}
+
+/* Honeycomb Game */
+.honeycomb-area {
+    width: 100%;
+    max-width: 600px;
+}
+
+.shape-selection {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.shapes {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.shape-option {
+    font-size: 3rem;
+    padding: 20px;
+    border: 2px solid #666;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.shape-option:hover {
+    border-color: #ff1744;
+    background: rgba(255,23,68,0.2);
+}
+
+.shape-option.selected {
+    border-color: #4caf50;
+    background: rgba(76,175,80,0.3);
+}
+
+.honeycomb-hidden {
+    display: none;
+}
+
+#honeycombCanvas {
+    border: 3px solid #ff1744;
+    border-radius: 10px;
+    background: #ffeb3b;
+    cursor: crosshair;
+}
+
+.extraction-controls {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Tug of War */
+.tug-area {
+    width: 100%;
+    max-width: 800px;
+}
+
+.rope-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+.team {
+    font-size: 1.5rem;
+    padding: 20px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    margin: 0 20px;
+}
+
+.rope {
+    width: 300px;
+    height: 20px;
+    background: #8d6e63;
+    border-radius: 10px;
+    position: relative;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+}
+
+.rope-marker {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 30px;
+    background: #ff1744;
+    border-radius: 2px;
+    transition: left 0.3s;
+}
+
+.timing-bar {
+    width: 300px;
+    height: 30px;
+    background: #333;
+    border-radius: 15px;
+    position: relative;
+    margin: 20px auto;
+    overflow: hidden;
+}
+
+#timing-indicator {
+    width: 20px;
+    height: 100%;
+    background: #ff1744;
+    border-radius: 10px;
+    position: absolute;
+    left: 0;
+    animation: moveIndicator 2s linear infinite;
+}
+
+@keyframes moveIndicator {
+    0% { left: 0; }
+    100% { left: calc(100% - 20px); }
+}
+
+.green-zone {
+    position: absolute;
+    left: 40%;
+    width: 20%;
+    height: 100%;
+    background: rgba(76,175,80,0.5);
+    border: 2px solid #4caf50;
+}
+
+/* Marbles Game */
+.marbles-area {
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.opponent-info {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.guessing-area {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.bet-section, .guess-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.marbles-area input {
+    padding: 10px;
+    font-size: 1.1rem;
+    border: 2px solid #ff1744;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    width: 80px;
+    text-align: center;
+}
+
+.result-area {
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 10px;
+    min-height: 60px;
+}
+
+.result-area.win {
+    background: rgba(76,175,80,0.3);
+    border: 2px solid #4caf50;
+}
+
+.result-area.lose {
+    background: rgba(244,67,54,0.3);
+    border: 2px solid #f44336;
+}
+
+/* Glass Bridge */
+.bridge-area {
+    width: 100%;
+    max-width: 600px;
+}
+
+.bridge-container {
+    margin-bottom: 40px;
+}
+
+#bridge-path {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.bridge-step {
+    height: 30px;
+    border-radius: 5px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.bridge-step.safe {
+    background: rgba(76,175,80,0.3);
+    border: 2px solid #4caf50;
+}
+
+.bridge-step.broken {
+    background: rgba(244,67,54,0.3);
+    border: 2px solid #f44336;
+}
+
+.bridge-step.current {
+    background: rgba(255,235,59,0.3);
+    border: 2px solid #ffeb3b;
+    animation: glow 1s infinite alternate;
+}
+
+@keyframes glow {
+    from { box-shadow: 0 0 5px #ffeb3b; }
+    to { box-shadow: 0 0 20px #ffeb3b; }
+}
+
+.bridge-info {
+    text-align: center;
+}
+
+.bridge-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.bridge-choice {
+    min-width: 120px;
+}
+
+/* Squid Game */
+.squid-area {
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+}
+
+.squid-field {
+    width: 100%;
+    height: 400px;
+    background: rgba(255,255,255,0.1);
+    border: 3px solid #ff1744;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.squid-shape {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.squid-head {
+    width: 80px;
+    height: 80px;
+    background: #ff1744;
+    border-radius: 50% 50% 0 0;
+    margin: 0 auto;
+}
+
+.squid-body {
+    width: 60px;
+    height: 100px;
+    background: #ff1744;
+    margin: 0 auto;
+}
+
+.squid-legs {
+    width: 120px;
+    height: 40px;
+    background: #ff1744;
+    margin: 0 auto;
+    border-radius: 0 0 60px 60px;
+}
+
+.squid-player, .squid-opponent {
+    position: absolute;
+    font-size: 2rem;
+    transition: all 0.2s;
+}
+
+.squid-player {
+    bottom: 20px;
+    left: 50px;
+}
+
+.squid-opponent {
+    bottom: 20px;
+    right: 50px;
+}
+
+.squid-controls {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Game Over & Victory Screens */
+#gameOverScreen, #victoryScreen {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+}
+
+.game-over, .victory {
+    text-align: center;
+    max-width: 600px;
+}
+
+.game-over h1 {
+    font-size: 4rem;
+    color: #f44336;
+    margin-bottom: 20px;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+}
+
+.victory h1 {
+    font-size: 4rem;
+    color: #4caf50;
+    margin-bottom: 20px;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+}
+
+.prize {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    color: #333;
+    padding: 20px;
+    border-radius: 15px;
+    margin: 30px 0;
+    box-shadow: 0 5px 20px rgba(255,215,0,0.3);
+}
+
+.final-stats {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.final-stats p {
+    margin: 10px 0;
+    font-size: 1.2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .title h1 {
+        font-size: 2.5rem;
+    }
+    
+    .games-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+    }
+    
+    .game-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .player-status {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    #playerName {
+        width: 250px;
+    }
+    
+    .bridge-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .rope-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .rope {
+        width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .title h1 {
+        font-size: 2rem;
+        letter-spacing: 2px;
+    }
+    
+    .game-area {
+        margin: 120px 10px 100px;
+    }
+    
+    #redlightGame .game-area {
+        height: 300px;
+    }
+    
+    .shapes {
+        flex-wrap: wrap;
+    }
+    
+    .shape-option {
+        font-size: 2rem;
+        padding: 15px;
+    }
+    
+    #honeycombCanvas {
+        width: 300px;
+        height: 300px;
+    }
+}
