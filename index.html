@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squid Game - 鱿鱼游戏</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="screen active">
+            <div class="title">
+                <h1>SQUID GAME</h1>
+                <p class="subtitle">鱿鱼游戏</p>
+            </div>
+            <div class="player-info">
+                <input type="text" id="playerName" placeholder="Enter your name" maxlength="20">
+                <button id="startBtn">Start Game</button>
+            </div>
+            <div class="game-rules">
+                <h3>Game Rules:</h3>
+                <ul>
+                    <li>Complete all 6 games to win</li>
+                    <li>Failure means elimination</li>
+                    <li>Only the strongest survive</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Game Selection Screen -->
+        <div id="gameSelectionScreen" class="screen">
+            <div class="header">
+                <h2>Select Your Game</h2>
+                <div class="player-status">
+                    <span id="playerDisplayName">Player</span>
+                    <span id="gamesCompleted">Games: 0/6</span>
+                </div>
+            </div>
+            <div class="games-grid">
+                <div class="game-card" data-game="redlight">
+                    <div class="game-icon">🚦</div>
+                    <h3>Red Light, Green Light</h3>
+                    <p>Move when green, stop when red</p>
+                    <span class="status" id="redlight-status">Not Started</span>
+                </div>
+                <div class="game-card" data-game="honeycomb">
+                    <div class="game-icon">🍯</div>
+                    <h3>Honeycomb Challenge</h3>
+                    <p>Extract the shape without breaking</p>
+                    <span class="status" id="honeycomb-status">Locked</span>
+                </div>
+                <div class="game-card" data-game="tugofwar">
+                    <div class="game-icon">🪢</div>
+                    <h3>Tug of War</h3>
+                    <p>Pull with perfect timing</p>
+                    <span class="status" id="tugofwar-status">Locked</span>
+                </div>
+                <div class="game-card" data-game="marbles">
+                    <div class="game-icon">⚪</div>
+                    <h3>Marbles</h3>
+                    <p>Guess the number correctly</p>
+                    <span class="status" id="marbles-status">Locked</span>
+                </div>
+                <div class="game-card" data-game="bridge">
+                    <div class="game-icon">🌉</div>
+                    <h3>Glass Bridge</h3>
+                    <p>Choose the right path</p>
+                    <span class="status" id="bridge-status">Locked</span>
+                </div>
+                <div class="game-card" data-game="squidgame">
+                    <div class="game-icon">🦑</div>
+                    <h3>Squid Game</h3>
+                    <p>The final challenge</p>
+                    <span class="status" id="squidgame-status">Locked</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Red Light Green Light Game -->
+        <div id="redlightGame" class="screen game-screen">
+            <div class="game-header">
+                <h2>Red Light, Green Light</h2>
+                <div class="timer">Time: <span id="redlight-timer">60</span>s</div>
+                <div class="progress">Progress: <span id="redlight-progress">0</span>%</div>
+            </div>
+            <div class="game-area">
+                <div id="doll">👧</div>
+                <div id="light-status" class="green">GREEN LIGHT</div>
+                <div id="player" class="player-sprite">🏃</div>
+                <div class="finish-line">FINISH</div>
+            </div>
+            <div class="game-controls">
+                <p>Hold SPACE to move forward when GREEN LIGHT is on!</p>
+                <p>Release immediately when RED LIGHT appears!</p>
+                <button id="redlight-back">Back to Menu</button>
+            </div>
+        </div>
+
+        <!-- Honeycomb Game -->
+        <div id="honeycombGame" class="screen game-screen">
+            <div class="game-header">
+                <h2>Honeycomb Challenge</h2>
+                <div class="timer">Time: <span id="honeycomb-timer">120</span>s</div>
+                <div class="lives">Lives: <span id="honeycomb-lives">3</span></div>
+            </div>
+            <div class="game-area honeycomb-area">
+                <div class="shape-selection">
+                    <h3>Choose your shape:</h3>
+                    <div class="shapes">
+                        <div class="shape-option" data-shape="triangle">△</div>
+                        <div class="shape-option" data-shape="circle">○</div>
+                        <div class="shape-option" data-shape="star">★</div>
+                        <div class="shape-option" data-shape="umbrella">☂</div>
+                    </div>
+                </div>
+                <div id="honeycomb-board" class="honeycomb-hidden">
+                    <canvas id="honeycombCanvas" width="400" height="400"></canvas>
+                    <div class="extraction-controls">
+                        <p>Click carefully around the shape to extract it!</p>
+                        <button id="honeycomb-restart">Restart Shape</button>
+                    </div>
+                </div>
+            </div>
+            <div class="game-controls">
+                <button id="honeycomb-back">Back to Menu</button>
+            </div>
+        </div>
+
+        <!-- Tug of War Game -->
+        <div id="tugofwarGame" class="screen game-screen">
+            <div class="game-header">
+                <h2>Tug of War</h2>
+                <div class="strength">Your Strength: <span id="tug-strength">50</span>%</div>
+                <div class="opponent">Opponent: <span id="opponent-strength">50</span>%</div>
+            </div>
+            <div class="game-area tug-area">
+                <div class="rope-container">
+                    <div class="team left">👥 Your Team</div>
+                    <div class="rope">
+                        <div id="rope-marker" class="rope-marker">|</div>
+                    </div>
+                    <div class="team right">👥 Opponent</div>
+                </div>
+                <div class="tug-controls">
+                    <p>Click rapidly when the indicator is in the GREEN zone!</p>
+                    <div class="timing-bar">
+                        <div id="timing-indicator"></div>
+                        <div class="green-zone"></div>
+                    </div>
+                    <button id="tug-pull" disabled>PULL!</button>
+                </div>
+            </div>
+            <div class="game-controls">
+                <button id="tugofwar-back">Back to Menu</button>
+            </div>
+        </div>
+
+        <!-- Marbles Game -->
+        <div id="marblesGame" class="screen game-screen">
+            <div class="game-header">
+                <h2>Marbles Game</h2>
+                <div class="marbles-count">Your Marbles: <span id="player-marbles">10</span></div>
+                <div class="rounds">Round: <span id="marble-round">1</span>/5</div>
+            </div>
+            <div class="game-area marbles-area">
+                <div class="opponent-info">
+                    <h3>Your Partner</h3>
+                    <p>They have hidden some marbles. Guess how many!</p>
+                </div>
+                <div class="guessing-area">
+                    <div class="bet-section">
+                        <label>Bet marbles:</label>
+                        <input type="number" id="marble-bet" min="1" max="10" value="1">
+                    </div>
+                    <div class="guess-section">
+                        <label>Your guess (1-10):</label>
+                        <input type="number" id="marble-guess" min="1" max="10" value="5">
+                    </div>
+                    <button id="marble-submit">Make Guess</button>
+                </div>
+                <div id="marble-result" class="result-area"></div>
+            </div>
+            <div class="game-controls">
+                <button id="marbles-back">Back to Menu</button>
+            </div>
+        </div>
+
+        <!-- Glass Bridge Game -->
+        <div id="bridgeGame" class="screen game-screen">
+            <div class="game-header">
+                <h2>Glass Bridge</h2>
+                <div class="position">Position: <span id="bridge-position">1</span>/18</div>
+                <div class="players-left">Players Left: <span id="players-remaining">16</span></div>
+            </div>
+            <div class="game-area bridge-area">
+                <div class="bridge-container">
+                    <div id="bridge-path"></div>
+                </div>
+                <div class="bridge-info">
+                    <p>Choose LEFT or RIGHT glass panel</p>
+                    <p>One is tempered glass (safe), one is normal glass (deadly)</p>
+                    <div class="bridge-controls">
+                        <button id="bridge-left" class="bridge-choice">← LEFT</button>
+                        <button id="bridge-right" class="bridge-choice">RIGHT →</button>
+                    </div>
+                </div>
+            </div>
+            <div class="game-controls">
+                <button id="bridge-back">Back to Menu</button>
+            </div>
+        </div>
+
+        <!-- Final Squid Game -->
+        <div id="squidgameGame" class="screen game-screen">
+            <div class="game-header">
+                <h2>Final Squid Game</h2>
+                <div class="health">Health: <span id="squid-health">100</span>%</div>
+                <div class="opponent-health">Opponent: <span id="squid-opponent-health">100</span>%</div>
+            </div>
+            <div class="game-area squid-area">
+                <div class="squid-field">
+                    <div class="squid-shape">
+                        <div class="squid-head"></div>
+                        <div class="squid-body"></div>
+                        <div class="squid-legs"></div>
+                    </div>
+                    <div id="squid-player" class="squid-player">🏃</div>
+                    <div id="squid-opponent" class="squid-opponent">🏃</div>
+                </div>
+                <div class="squid-controls">
+                    <p>Use WASD to move, SPACE to attack when close to opponent</p>
+                    <p>Reach the squid's head to win!</p>
+                </div>
+            </div>
+            <div class="game-controls">
+                <button id="squidgame-back">Back to Menu</button>
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameOverScreen" class="screen">
+            <div class="game-over">
+                <h1 id="gameOverTitle">GAME OVER</h1>
+                <p id="gameOverMessage">You have been eliminated</p>
+                <div class="final-stats">
+                    <p>Games Completed: <span id="finalGamesCompleted">0</span>/6</p>
+                    <p>Player: <span id="finalPlayerName">Unknown</span></p>
+                </div>
+                <button id="restartBtn">Play Again</button>
+                <button id="menuBtn">Main Menu</button>
+            </div>
+        </div>
+
+        <!-- Victory Screen -->
+        <div id="victoryScreen" class="screen">
+            <div class="victory">
+                <h1>CONGRATULATIONS!</h1>
+                <p>You are the sole survivor!</p>
+                <div class="prize">
+                    <h2>💰 Prize Money: ₩45,600,000,000</h2>
+                </div>
+                <div class="final-stats">
+                    <p>All Games Completed: 6/6</p>
+                    <p>Winner: <span id="victoryPlayerName">Champion</span></p>
+                </div>
+                <button id="playAgainBtn">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
