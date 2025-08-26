@@ -303,9 +303,11 @@ class SquidGame {
                 break;
             case 'star':
                 this.drawStar(ctx, centerX, centerY, 5, 70, 35);
+                ctx.stroke();
                 break;
             case 'umbrella':
                 this.drawUmbrella(ctx, centerX, centerY);
+                ctx.stroke();
                 break;
         }
     }
@@ -329,45 +331,47 @@ class SquidGame {
             rot += step;
         }
         
+        ctx.lineTo(cx, cy - outerRadius);
         ctx.closePath();
-        ctx.stroke();
     }
 
     drawUmbrella(ctx, cx, cy) {
         ctx.beginPath();
         
-        // Umbrella top (semicircle)
-        ctx.arc(cx, cy - 20, 60, Math.PI, 0, false);
+        // Umbrella dome (semicircle with scalloped edge)
+        ctx.arc(cx, cy - 10, 50, Math.PI, 0);
         
-        // Add umbrella points (small bumps on the edge)
-        const points = 8;
-        for (let i = 0; i <= points; i++) {
-            const angle = Math.PI + (i * Math.PI / points);
-            const x = cx + Math.cos(angle) * 60;
-            const y = cy - 20 + Math.sin(angle) * 60;
+        // Add scalloped edge detail
+        const segments = 6;
+        for (let i = 0; i <= segments; i++) {
+            const angle = Math.PI + (i * Math.PI / segments);
+            const x = cx + Math.cos(angle) * 50;
+            const y = cy - 10 + Math.sin(angle) * 50;
             
             if (i > 0) {
-                const prevAngle = Math.PI + ((i-1) * Math.PI / points);
-                const prevX = cx + Math.cos(prevAngle) * 60;
-                const prevY = cy - 20 + Math.sin(prevAngle) * 60;
+                // Create small scallop
+                const prevAngle = Math.PI + ((i-1) * Math.PI / segments);
+                const prevX = cx + Math.cos(prevAngle) * 50;
+                const prevY = cy - 10 + Math.sin(prevAngle) * 50;
                 
-                // Create small bump
-                const midAngle = prevAngle + (Math.PI / points) / 2;
-                const bumpX = cx + Math.cos(midAngle) * 65;
-                const bumpY = cy - 20 + Math.sin(midAngle) * 65;
+                const midAngle = prevAngle + (Math.PI / segments) / 2;
+                const scallopX = cx + Math.cos(midAngle) * 45;
+                const scallopY = cy - 10 + Math.sin(midAngle) * 45;
                 
-                ctx.quadraticCurveTo(bumpX, bumpY, x, y);
+                ctx.quadraticCurveTo(scallopX, scallopY, x, y);
             }
         }
         
-        // Umbrella handle (straight part)
+        // Umbrella handle (straight vertical line)
         ctx.moveTo(cx, cy + 40);
-        ctx.lineTo(cx, cy + 90);
+        ctx.lineTo(cx, cy + 80);
         
-        // Handle curve (hook)
-        ctx.arc(cx + 20, cy + 90, 20, Math.PI, Math.PI * 1.5, false);
+        // Handle hook (J-shaped curve at bottom)
+        ctx.moveTo(cx, cy + 80);
+        ctx.quadraticCurveTo(cx + 15, cy + 85, cx + 15, cy + 95);
+        ctx.quadraticCurveTo(cx + 15, cy + 100, cx + 10, cy + 100);
         
-        ctx.stroke();
+        ctx.closePath();
     }
 
     honeycombClick(e) {
@@ -378,40 +382,70 @@ class SquidGame {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        // Simple hit detection - check if click is near the shape outline
+        // Improved hit detection for different shapes
         const centerX = data.canvas.width / 2;
         const centerY = data.canvas.height / 2;
         const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
 
-        // Different hit zones for different shapes
-        let isInsideShape = false;
-        let isNearEdge = false;
+        let isSuccess = false;
+        let isSafe = true;
 
         switch(data.selectedShape) {
             case 'circle':
-                isInsideShape = distance < 60;
-                isNearEdge = distance > 50 && distance < 80;
+                isSuccess = distance < 55;
+                isSafe = distance < 80;
                 break;
             case 'triangle':
+                // Check if inside triangle bounds
+                const triangleHeight = 110;
+                const triangleBase = 120;
+                isSuccess = y > centerY - 60 && y < centerY + 40 && 
+                           Math.abs(x - centerX) < (triangleBase / 2) * (1 - (y - (centerY - 60)) / triangleHeight);
+                isSafe = distance < 90;
+                break;
             case 'star':
+                isSuccess = distance < 60;
+                isSafe = distance < 85;
+                break;
             case 'umbrella':
-                isInsideShape = distance < 50;
-                isNearEdge = distance > 40 && distance < 90;
+                // Check umbrella shape (dome + handle)
+                const isDome = y < centerY + 20 && distance < 60;
+                const isHandle = Math.abs(x - centerX) < 15 && y > centerY + 20 && y < centerY + 90;
+                isSuccess = isDome || isHandle;
+                isSafe = distance < 85 || (Math.abs(x - centerX) < 25 && y > centerY + 10);
                 break;
         }
 
-        if (!isNearEdge && distance > 100) {
-            // Clicked too far from shape
+        if (!isSafe) {
+            // Clicked too far from safe zone
             data.lives--;
             document.getElementById('honeycomb-lives').textContent = data.lives;
+            
+            // Visual feedback for mistake
+            const canvas = data.canvas;
+            const ctx = data.ctx;
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            setTimeout(() => {
+                this.drawHoneycomb();
+            }, 200);
             
             if (data.lives <= 0) {
                 this.endGame(false, 'You broke the honeycomb! Eliminated!');
                 return;
             }
-        } else if (isInsideShape) {
+        } else if (isSuccess) {
             // Successfully extracted the shape
-            this.completeGame('honeycomb');
+            // Visual feedback for success
+            const canvas = data.canvas;
+            const ctx = data.ctx;
+            ctx.fillStyle = 'rgba(0, 255, 0, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            setTimeout(() => {
+                this.completeGame('honeycomb');
+            }, 500);
         }
     }
 
