@@ -280,45 +280,46 @@ class SquidGame {
         
         // Draw shape outline
         ctx.strokeStyle = '#8d6e63';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
         
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         
         switch(selectedShape) {
             case 'triangle':
-                ctx.moveTo(centerX, centerY - 60);
-                ctx.lineTo(centerX - 52, centerY + 30);
-                ctx.lineTo(centerX + 52, centerY + 30);
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY - 70);
+                ctx.lineTo(centerX - 60, centerY + 40);
+                ctx.lineTo(centerX + 60, centerY + 40);
                 ctx.closePath();
+                ctx.stroke();
                 break;
             case 'circle':
-                ctx.arc(centerX, centerY, 60, 0, 2 * Math.PI);
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 70, 0, 2 * Math.PI);
+                ctx.stroke();
                 break;
             case 'star':
-                this.drawStar(ctx, centerX, centerY, 5, 60, 30);
+                this.drawStar(ctx, centerX, centerY, 5, 70, 35);
                 break;
             case 'umbrella':
                 this.drawUmbrella(ctx, centerX, centerY);
                 break;
         }
-        
-        ctx.stroke();
     }
 
     drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius) {
         let rot = Math.PI / 2 * 3;
-        let x = cx;
-        let y = cy;
         const step = Math.PI / spikes;
 
         ctx.beginPath();
         ctx.moveTo(cx, cy - outerRadius);
         
         for (let i = 0; i < spikes; i++) {
-            x = cx + Math.cos(rot) * outerRadius;
-            y = cy + Math.sin(rot) * outerRadius;
+            let x = cx + Math.cos(rot) * outerRadius;
+            let y = cy + Math.sin(rot) * outerRadius;
             ctx.lineTo(x, y);
             rot += step;
 
@@ -328,18 +329,45 @@ class SquidGame {
             rot += step;
         }
         
-        ctx.lineTo(cx, cy - outerRadius);
         ctx.closePath();
+        ctx.stroke();
     }
 
     drawUmbrella(ctx, cx, cy) {
-        // Umbrella top (arc)
-        ctx.arc(cx, cy - 20, 50, Math.PI, 0);
-        // Handle
-        ctx.moveTo(cx, cy + 30);
-        ctx.lineTo(cx, cy + 80);
-        // Handle curve
-        ctx.arc(cx + 15, cy + 80, 15, Math.PI, Math.PI * 1.5);
+        ctx.beginPath();
+        
+        // Umbrella top (semicircle)
+        ctx.arc(cx, cy - 20, 60, Math.PI, 0, false);
+        
+        // Add umbrella points (small bumps on the edge)
+        const points = 8;
+        for (let i = 0; i <= points; i++) {
+            const angle = Math.PI + (i * Math.PI / points);
+            const x = cx + Math.cos(angle) * 60;
+            const y = cy - 20 + Math.sin(angle) * 60;
+            
+            if (i > 0) {
+                const prevAngle = Math.PI + ((i-1) * Math.PI / points);
+                const prevX = cx + Math.cos(prevAngle) * 60;
+                const prevY = cy - 20 + Math.sin(prevAngle) * 60;
+                
+                // Create small bump
+                const midAngle = prevAngle + (Math.PI / points) / 2;
+                const bumpX = cx + Math.cos(midAngle) * 65;
+                const bumpY = cy - 20 + Math.sin(midAngle) * 65;
+                
+                ctx.quadraticCurveTo(bumpX, bumpY, x, y);
+            }
+        }
+        
+        // Umbrella handle (straight part)
+        ctx.moveTo(cx, cy + 40);
+        ctx.lineTo(cx, cy + 90);
+        
+        // Handle curve (hook)
+        ctx.arc(cx + 20, cy + 90, 20, Math.PI, Math.PI * 1.5, false);
+        
+        ctx.stroke();
     }
 
     honeycombClick(e) {
@@ -355,7 +383,25 @@ class SquidGame {
         const centerY = data.canvas.height / 2;
         const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
 
-        if (distance > 80) {
+        // Different hit zones for different shapes
+        let isInsideShape = false;
+        let isNearEdge = false;
+
+        switch(data.selectedShape) {
+            case 'circle':
+                isInsideShape = distance < 60;
+                isNearEdge = distance > 50 && distance < 80;
+                break;
+            case 'triangle':
+            case 'star':
+            case 'umbrella':
+                isInsideShape = distance < 50;
+                isNearEdge = distance > 40 && distance < 90;
+                break;
+        }
+
+        if (!isNearEdge && distance > 100) {
+            // Clicked too far from shape
             data.lives--;
             document.getElementById('honeycomb-lives').textContent = data.lives;
             
@@ -363,7 +409,8 @@ class SquidGame {
                 this.endGame(false, 'You broke the honeycomb! Eliminated!');
                 return;
             }
-        } else if (distance < 40) {
+        } else if (isInsideShape) {
+            // Successfully extracted the shape
             this.completeGame('honeycomb');
         }
     }
